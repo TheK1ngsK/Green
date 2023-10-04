@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora de Reflorestamento</title>
+    <style>
+        /* Coloque o seu código CSS aqui */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            background-color: #355E3B;
+            color: white;
+            padding: 10px;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #355E3B;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #355E3B;
+        }
+
+        input[type="button"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 20px;
+            background-color: #355E3B;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        input[type="button"]:hover {
+            background-color: #355E3B;
+        }
+
+        a {
+            display: block;
+            margin-top: 20px;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calculadora de Reflorestamento com Drones</h1>
+    <form method="POST">
+        <label for="quantidade_sementes">Quantidade de Sementes:</label>
+        <input type="number" name="quantidade_sementes" required>
+        
+        <label for="distancia_metros">Distância em Metros:</label>
+        <input type="number" name="distancia_metros" required>
+        
+        <label for="tamanho_area">Tamanho da Área:</label>
+        <input type="number" name="tamanho_area" required>
+        <select name="unidade_area">
+            <option value="m2">m²</option>
+            <option value="km2">km²</option>
+        </select>
+        
+        <label for="velocidade">Velocidade do Drone:</label>
+        <input type="number" name="velocidade" required>
+        <select name="unidade_velocidade">
+            <option value="m/s">m/s</option>
+            <option value="km/h">km/h</option>
+        </select>
+        
+        <input type="submit" value="Calcular">
+        <input type="button" value="Limpar" id="limpar-campos"> <!-- Botão Limpar -->
+        
+        <div class="resultado">
+            <!-- Aqui serão exibidos os resultados do cálculo via JavaScript -->
+        </div>
+    </form>
+
+    <script>
+        // Função para converter a área para metros quadrados
+        function converterArea(tamanhoArea, unidadeArea) {
+            let tamanhoAreaMetrosQuadrados = tamanhoArea;
+            if (unidadeArea === 'km2') {
+                tamanhoAreaMetrosQuadrados = tamanhoArea * 1000000; // 1 km2 = 1000000 m2
+            }
+            return tamanhoAreaMetrosQuadrados;
+        }
+    
+        // Função para converter a velocidade para metros por segundo
+        function converterVelocidade(velocidade, unidadeVelocidade) {
+            let velocidadeMetrosPorSegundo = velocidade;
+            if (unidadeVelocidade === 'km/h') {
+                velocidadeMetrosPorSegundo = (velocidade * 1000) / 3600; // Converter km/h para m/s
+            }
+            return velocidadeMetrosPorSegundo;
+        }
+    
+        // Função para calcular o tempo necessário em segundos
+        function calcularTempo(tamanhoAreaMetrosQuadrados, velocidadeMetrosPorSegundo, distanciaMetros) {
+            return (tamanhoAreaMetrosQuadrados) / (velocidadeMetrosPorSegundo) ; // Correção no cálculo
+        }
+    
+        // Função para calcular a quantidade de sementes necessárias
+        function calcularSementes(tamanhoAreaMetrosQuadrados, quantidadeSementes, distanciaMetros) {
+            return (quantidadeSementes * tamanhoAreaMetrosQuadrados) / distanciaMetros;
+        }
+    
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+    
+                const quantidadeSementes = parseFloat(form.querySelector('[name="quantidade_sementes"]').value);
+                const distanciaMetros = parseFloat(form.querySelector('[name="distancia_metros"]').value);
+                const tamanhoArea = parseFloat(form.querySelector('[name="tamanho_area"]').value);
+                const unidadeArea = form.querySelector('[name="unidade_area"]').value;
+                const velocidade = parseFloat(form.querySelector('[name="velocidade"]').value);
+                const unidadeVelocidade = form.querySelector('[name="unidade_velocidade"]').value;
+    
+                let quantidadeSementesNecessarias;
+                let tempoSegundos;
+    
+                // Usa as funções para converter as unidades de medida e calcular o tempo e a quantidade de sementes
+                const tamanhoAreaMetrosQuadrados = converterArea(tamanhoArea, unidadeArea);
+                const velocidadeMetrosPorSegundo = converterVelocidade(velocidade, unidadeVelocidade);
+                tempoSegundos = calcularTempo(tamanhoAreaMetrosQuadrados, velocidadeMetrosPorSegundo, distanciaMetros);
+                quantidadeSementesNecessarias = calcularSementes(tamanhoAreaMetrosQuadrados, quantidadeSementes, distanciaMetros);
+    
+                // Calcula o tempo em dias, horas, minutos e segundos
+                const dias = Math.floor(tempoSegundos / 86400); // 1 dia = 86400 segundos
+                tempoSegundos -= dias * 86400;
+                const horas = Math.floor(tempoSegundos / 3600);
+                tempoSegundos -= horas * 3600;
+                const minutos = Math.floor(tempoSegundos / 60);
+                const segundos = Math.floor(tempoSegundos % 60);
+    
+                // Formata o tempo
+                let tempoFormatado = '';
+                if (dias > 0) {
+                    tempoFormatado += `${dias}D `;
+                }
+                tempoFormatado += `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+    
+                // Formata a quantidade de sementes com pontos
+                const quantidadeSementesFormatada = quantidadeSementesNecessarias.toLocaleString();
+    
+                // Exibe os resultados na página
+                const resultadoDiv = document.querySelector('.resultado');
+                resultadoDiv.innerHTML = `
+                    <p>Tempo necessário: ${tempoFormatado} (DD:HH:MM:SS)</p>
+                    <p>Quantidade de Sementes Necessárias: ${quantidadeSementesFormatada} sementes</p>
+                `;
+    
+                // Role a página até o resultado
+                resultadoDiv.scrollIntoView({ behavior: 'smooth' });
+            });
+    
+            // Adicione um evento de clique ao botão "Limpar Campos"
+            const limparCamposButton = document.getElementById('limpar-campos');
+            limparCamposButton.addEventListener('click', function () {
+                // Limpa os valores dos campos de entrada
+                form.querySelector('[name="quantidade_sementes"]').value = '';
+                form.querySelector('[name="distancia_metros"]').value = '';
+                form.querySelector('[name="tamanho_area"]').value = '';
+                form.querySelector('[name="unidade_area"]').selectedIndex = 0;
+                form.querySelector('[name="velocidade"]').value = '';
+                form.querySelector('[name="unidade_velocidade"]').selectedIndex = 0;
+    
+                // Limpa o resultado anterior
+                const resultadoDiv = document.querySelector('.resultado');
+                resultadoDiv.innerHTML = '';
+    
+                // Role a página de volta para o topo
+                window.scrollTo(0, 0);
+            });
+        });
+    </script>
+    
+    
+    
+</body>
+</html>
